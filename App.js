@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import WorkoutNavigation from './WorkoutNavigation';
+import WorkoutNavigation from './navigation/WorkoutNavigation';
 import LoginScreen from './screens/LoginScreen'
 import LogoutScreen from './screens/LogoutScreen'
-import ExerciseNavigation from './ExerciseNavigation';
+import ExerciseNavigation from './navigation/ExerciseNavigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import TokenService from './services/token-service'
 
@@ -34,9 +34,11 @@ export default function App() {
             tabBarIcon: ({ focused, color, size }) => {
               let iconName;
               if (route.name === 'Workouts') {
-                iconName = focused ? 'ios-list' : 'ios-list';
+                iconName = focused ? 'ios-list' : 'list-outline';
               } else if (route.name === 'Exercises') {
-                iconName = focused ? 'ios-list' : 'ios-list';
+                iconName = focused ? 'barbell' : 'barbell-outline';
+              } else if (route.name === 'Logout') {
+                iconName = focused ? 'power' : 'power-outline';
               }
               return <Ionicons name={iconName} size={size} color={color} />
             }
@@ -79,10 +81,6 @@ export default function App() {
         ? renderMain()
         : renderLogin())
       }
-      <Button
-        title="Display Token"
-        onPress={() => displayToken()}
-      />
     </>
   );
 }

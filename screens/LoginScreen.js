@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 import TokenService from '../services/token-service';
+import config from '../config'
 import * as SecureStore from 'expo-secure-store';
 
 export default function LoginScreen(props) {
@@ -14,7 +15,7 @@ export default function LoginScreen(props) {
       user_name: username,
       password: password,
     }
-    fetch(`https://shrouded-cliffs-68019.herokuapp.com/api/auth/login`, {
+    fetch(`${config.API_ENDPOINT}/auth/login`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json'
@@ -34,10 +35,6 @@ export default function LoginScreen(props) {
       .catch(res => {
         console.error(res.error)
       })
-  }
-
-  function displayToken() {
-    TokenService.getToken().then(token => console.log(token))
   }
 
   return (
@@ -60,14 +57,6 @@ export default function LoginScreen(props) {
       <Button
         title="Login"
         onPress={() => handleLogin(username, password)}
-      />
-      <Button
-        title="Display Token"
-        onPress={() => displayToken()}
-      />
-      <Button
-        title="Logout"
-        onPress={() => handleLogout()}
       />
     </View>
   );

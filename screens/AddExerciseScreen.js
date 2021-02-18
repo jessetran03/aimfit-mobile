@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Button, TouchableHighlight } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import TokenService from '../services/token-service';
 import config from '../config'
 
-export default function ExerciseScreen({ navigation }) {
+export default function AddExerciseScreen({ route, navigation }) {
 
   const [exercises, setExercises] = useState([
     {
@@ -10,12 +12,33 @@ export default function ExerciseScreen({ navigation }) {
       "id": 1,
       "muscle": "Chest",
     },
-    {
-      "exercise_name": "---------------",
-      "id": 2,
-      "muscle": "Back",
-    },
   ]);
+
+  async function handleAddExercise(exerciseId, workoutId) {
+    const newWorkoutExercise = {
+      workout_id: workoutId,
+      exercise_id: exerciseId,
+    }
+    fetch(`${config.API_ENDPOINT}/workout_exercises`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'authorization': `Bearer ${await TokenService.getToken()}`
+      },
+      body: JSON.stringify(newWorkoutExercise),
+    })
+      .then(res => {
+        if (!res.ok)
+          return res.json().then(e => Promise.reject(e))
+        return res.json()
+      })
+      .then(workoutExercise => {
+        navigation.goBack()
+      })
+      .catch(error => {
+        console.error({ error })
+      })
+  }
 
   useEffect(() => {
     fetch(`${config.API_ENDPOINT}/exercises`)
@@ -39,13 +62,18 @@ export default function ExerciseScreen({ navigation }) {
         data={exercises}
         renderItem={({ item }) =>
           <TouchableHighlight
-            onPress={() => navigation.navigate('ExerciseScreen')}
+            onPress={() => console.log('Hi')}
             underlayColor="#ccc"
           >
             <View
               style={styles.exercise}
             >
               <Text style={styles.item}>{item.exercise_name}</Text>
+              <Icon
+                onPress={() => handleAddExercise(item.id, route.params.workoutId)}
+                style={{ alignSelf: 'flex-end' }}
+                size={20}
+                name="add" />
             </View>
           </TouchableHighlight>
         }
