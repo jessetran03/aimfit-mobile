@@ -3,25 +3,35 @@ import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from 'rea
 import TokenService from '../services/token-service';
 import config from '../config';
 import Spinner from 'react-native-loading-spinner-overlay';
+import Navigation from '../navigation';
 
-export default function LoginScreen({ route }) {
+export default function RegisterScreen({ props, navigation }) {
 
+  const [fullName, onChangeFullName] = useState('Placeholder for username')
   const [username, onChangeUsername] = useState('Placeholder for username')
   const [password, onChangePassword] = useState('Placeholder for password')
   const [loading, setLoading] = useState(false);
 
-  function handleLogin(username, password) {
+  const startLoading = () => {
     setLoading(true);
-    const login = {
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+  };
+
+  function handleRegister(fullName, username, password) {
+    startLoading();
+    const newUser = {
+      full_name: fullName,
       user_name: username,
       password: password,
     }
-    fetch(`${config.API_ENDPOINT}/auth/login`, {
+    fetch(`${config.API_ENDPOINT}/users`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json'
       },
-      body: JSON.stringify(login),
+      body: JSON.stringify(newUser),
     })
       .then(res => {
         if (!res.ok)
@@ -31,7 +41,7 @@ export default function LoginScreen({ route }) {
       .then(res => {
         TokenService.setToken(res.authToken)
         setLoading(!loading)
-        route.params.onLogin(true);
+        navigation.goBack()
       })
       .catch(res => {
         setLoading(!loading)
@@ -42,14 +52,22 @@ export default function LoginScreen({ route }) {
   return (
     <View style={styles.container}>
       <View style={styles.loginContainer}></View>
-      <Text style={styles.header}>Log In</Text>
+      <Text style={styles.header}>Sign Up</Text>
+      <Text style={styles.text}>Full Name</Text>
+      <TextInput
+        style={styles.input}
+        onChangeText={text => onChangeFullName(text)}
+        autoCapitalize='none'
+        autoCorrect={false}
+        placeholder="Full Name"
+      />
       <Text style={styles.text}>Username</Text>
       <TextInput
         style={styles.input}
         onChangeText={text => onChangeUsername(text)}
         autoCapitalize='none'
         autoCorrect={false}
-        placeholder="Login"
+        placeholder="Username"
       />
       <Text style={styles.text}>Password</Text>
       <TextInput
@@ -59,9 +77,9 @@ export default function LoginScreen({ route }) {
         secureTextEntry={true}
         placeholder="Password"
       />
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => handleLogin(username, password)}>
+      <TouchableOpacity style={styles.buttonContainer} onPress={() => handleRegister(fullName, username, password)}>
         <Text style={styles.buttonText}>
-          Log In
+          Sign Up
         </Text>
       </TouchableOpacity>
       <Spinner visible={loading}/>
@@ -89,7 +107,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 20,
     alignItems: 'stretch',
-    marginTop: 20,
+    marginTop: 10,
   },
   header: {
     fontSize: 30,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActionSheetIOS, StyleSheet, Text, View, FlatList, Button, TextInput } from 'react-native';
+import { ActionSheetIOS, StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity } from 'react-native';
 import TokenService from '../services/token-service';
 import Icon from 'react-native-vector-icons/Ionicons';
 import config from '../config'
@@ -115,43 +115,56 @@ export default function ExerciseLog({ route }) {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        onChangeText={text => onChangeSet(text)}
-        autoCapitalize='none'
-        placeholder="Set"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={text => onChangeRep(text)}
-        autoCapitalize='none'
-        autoCorrect={false}
-        placeholder="Rep"
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={text => onChangeWeight(text)}
-        autoCapitalize='none'
-        autoCorrect={false}
-        placeholder="Weight"
-      />
-      <Button
-        title="+ Add Entry"
-        onPress={() => handleAddEntry(set, rep, weight)}
-      />
+      <View style={styles.addEntry}>
+        <TextInput
+          style={styles.input}
+          onChangeText={text => onChangeSet(text)}
+          autoCapitalize='none'
+          placeholder="Set"
+          keyboardType="number-pad"
+          maxLength={2}
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={text => onChangeRep(text)}
+          autoCapitalize='none'
+          autoCorrect={false}
+          placeholder="Rep"
+          keyboardType="number-pad"
+          maxLength={2}
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={text => onChangeWeight(text)}
+          autoCapitalize='none'
+          autoCorrect={false}
+          placeholder="Weight"
+          keyboardType="number-pad"
+          maxLength={4}
+        />
+        <TouchableOpacity style={styles.buttonContainer} onPress={() => handleAddEntry(set, rep, weight)}>
+          <Text style={styles.buttonText}>
+            + Add Entry
+          </Text>
+        </TouchableOpacity>
+      </View>
       {exerciseLog.length === 0 &&
-        <Text>No entries have been added yet.</Text>
+        <Text style={styles.empty}>No entries have been added yet.</Text>
       }
       <FlatList
         data={exerciseLog}
         renderItem={({ item }) =>
           <View style={styles.exerciseLog} >
-            <Text>{moment(item.date_logged).format('MM-DD-YYYY')}</Text>
-            <Text>{item.weight_count} lb</Text>
-            <Text>{item.set_count}x{item.rep_count}</Text>
+            <View>
+              <Text>{moment(item.date_logged).format('MM-DD-YYYY')}</Text>
+              <Text>{moment(item.date_logged).format('dddd')}</Text>
+            </View>
+            <View style={styles.set}>
+              <Text style={styles.weightCount}>{item.weight_count} lb</Text>
+              <Text style={styles.setCount}>{item.set_count}x{item.rep_count}</Text>
+            </View>
             <Icon
               onPress={() => onPress(item.id)}
-              style={{ alignSelf: 'flex-end' }}
               size={20}
               name="ellipsis-vertical" />
           </View>
@@ -163,20 +176,58 @@ export default function ExerciseLog({ route }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
+  addEntry: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 10,
+  },
+  buttonContainer: {
+    backgroundColor: '#333',
+    borderStyle: 'solid',
+    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 8,
+    margin: 15,
+  },
+  buttonText: {
+    alignSelf: 'center',
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  empty: {
+    alignSelf: 'center',
+    fontSize: 16,
+    marginTop: 12,
+    fontStyle: 'italic'
   },
   exerciseLog: {
+    alignItems: 'center',
     borderStyle: 'solid',
     borderBottomWidth: 1,
     borderColor: '#777777',
-    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+  },
+  input: {
+    width: 200,
+    padding: 10,
+    backgroundColor: 'white',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 10,
+    marginTop: 5,
   },
   item: {
     padding: 0,
+  },
+  setCount: {
+    fontSize: 20,
+  },
+  weightCount: {
+    fontSize: 24,
+    fontWeight: 'bold',
   }
 });

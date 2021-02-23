@@ -13,6 +13,7 @@ export default function WorkoutNavigation() {
       <Stack.Screen
         name="Workouts"
         component={WorkoutListScreen}
+        options={{title: 'My Workouts'}}
       />
       <Stack.Screen
         name="WorkoutScreen"
@@ -27,6 +28,7 @@ export default function WorkoutNavigation() {
       <Stack.Screen
         name="AddExerciseScreen"
         component={AddExerciseScreen}
+        options={({ route }) => ({ title: `Add to ${route.params.workoutName}`})}
       />
     </Stack.Navigator>
   );

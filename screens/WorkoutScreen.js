@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { ActionSheetIOS, StyleSheet, Text, View, FlatList, Button, TouchableHighlight } from 'react-native';
+import { ActionSheetIOS, StyleSheet, Text, View, FlatList, Button, TouchableOpacity, TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import TokenService from '../services/token-service';
+import Spinner from 'react-native-loading-spinner-overlay';
 import config from '../config'
 
 export default function Workout({ navigation, route }) {
 
-  const [exercises, setExercises] = useState([
-    {id: 1,
-    exerciseId: 1},
-  ]);
+  const [exercises, setExercises] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const startLoading = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+  };
 
   function onPress(id) {
     ActionSheetIOS.showActionSheetWithOptions(
@@ -76,7 +82,7 @@ export default function Workout({ navigation, route }) {
     
     <View style={styles.container}>
       {exercises.length === 0 &&
-        <Text>No exercises have been added yet.</Text>
+        <Text style={styles.empty}>No exercises have been added yet.</Text>
       }
       <FlatList
         data={exercises}
@@ -88,9 +94,7 @@ export default function Workout({ navigation, route }) {
             })}
             underlayColor="#ccc"
           >
-            <View
-              style={styles.exercise}
-            >
+            <View style={styles.exercise}>
               <Text style={styles.item}>{item.exercise_name}</Text>
               <Icon
                 onPress={() => onPress(item.id)}
@@ -102,33 +106,55 @@ export default function Workout({ navigation, route }) {
         }
         keyExtractor={(item) => item.id.toString()}
       />
-      <Button
-        title="+ Add Exercise"
+      <TouchableOpacity 
+        style={styles.buttonContainer}
         onPress={() => navigation.navigate('AddExerciseScreen', {
-          workoutId: route.params.id
-        })}
-        underlayColor="#ccc"
-      />
+          workoutId: route.params.id,
+          workoutName: route.params.title
+        })}>
+        <Text style={styles.buttonText}>
+          + Add Exercise
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'stretch',
-    justifyContent: 'center',
-    paddingTop: 10,
+  buttonContainer: {
+    backgroundColor: '#eee',
+    borderStyle: 'solid',
+    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 20,
+    alignSelf: 'stretch',
+    padding: 8,
+    margin: 8,
+  },
+  buttonText: {
+    alignSelf: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  empty: {
+    alignSelf: 'center',
+    fontSize: 16,
+    marginTop: 20,
+    marginBottom: 12,
+    fontStyle: 'italic'
   },
   exercise: {
     alignItems: 'center',
     borderStyle: 'solid',
     borderBottomWidth: 1,
     borderColor: '#777777',
-    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 30,
+    paddingVertical: 18,
   },
   item: {
     padding: 0,
+    fontSize: 16,
   }
 });
