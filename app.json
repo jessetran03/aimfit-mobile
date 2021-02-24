@@ -4,9 +4,9 @@
     "slug": "aimfit-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/aimfit-logo.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./dumbbell.jpeg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,7 +17,9 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "jesse.aimfit",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {

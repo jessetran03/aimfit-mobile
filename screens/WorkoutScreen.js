@@ -33,22 +33,22 @@ export default function Workout({ navigation, route }) {
 
   async function getWorkoutExercises() {
     fetch(`${config.API_ENDPOINT}/workouts/${route.params.id}/exercises`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${await TokenService.getToken()}`
-        }
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${await TokenService.getToken()}`
+      }
+    })
+      .then(res =>
+        (!res.ok)
+          ? res.json().then(e => Promise.reject(e))
+          : res.json()
+      )
+      .then((exercises) => {
+        setExercises(exercises)
       })
-        .then(res =>
-          (!res.ok)
-            ? res.json().then(e => Promise.reject(e))
-            : res.json()
-        )
-        .then((exercises) => {
-          setExercises(exercises)
-        })
-        .catch(error => {
-          console.error({ error })
-        })
+      .catch(error => {
+        console.error({ error })
+      })
   }
 
   async function removeExercise(id) {
@@ -79,7 +79,7 @@ export default function Workout({ navigation, route }) {
   }, []);
 
   return (
-    
+
     <View style={styles.container}>
       {exercises.length === 0 &&
         <Text style={styles.empty}>No exercises have been added yet.</Text>
@@ -87,26 +87,29 @@ export default function Workout({ navigation, route }) {
       <FlatList
         data={exercises}
         renderItem={({ item }) =>
-          <TouchableHighlight
-            onPress={() => navigation.navigate('ExerciseLogScreen', {
-              id: item.exercise_id,
-              name: item.exercise_name,
-            })}
-            underlayColor="#ccc"
-          >
-            <View style={styles.exercise}>
-              <Text style={styles.item}>{item.exercise_name}</Text>
-              <Icon
-                onPress={() => onPress(item.id)}
-                style={{ alignSelf: 'flex-end' }}
-                size={20}
-                name="ellipsis-vertical" />
-            </View>
-          </TouchableHighlight>
+          <>
+            <TouchableHighlight
+              onPress={() => navigation.navigate('ExerciseLogScreen', {
+                id: item.exercise_id,
+                name: item.exercise_name,
+              })}
+              underlayColor="#ccc"
+            >
+              <View style={styles.exercise}>
+                <Text style={styles.item}>{item.exercise_name}</Text>
+                <Icon
+                  onPress={() => onPress(item.id)}
+                  style={{ alignSelf: 'flex-end' }}
+                  size={20}
+                  name="ellipsis-vertical" />
+              </View>
+            </TouchableHighlight>
+            <View style={styles.border} />
+          </>
         }
         keyExtractor={(item) => item.id.toString()}
       />
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.buttonContainer}
         onPress={() => navigation.navigate('AddExerciseScreen', {
           workoutId: route.params.id,
@@ -122,17 +125,18 @@ export default function Workout({ navigation, route }) {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    backgroundColor: '#eee',
+    backgroundColor: '#39A9DB',
     borderStyle: 'solid',
-    borderColor: 'black',
+    borderColor: '#39A9DB',
     borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 10,
     alignSelf: 'stretch',
     padding: 8,
-    margin: 8,
+    margin: 12,
   },
   buttonText: {
     alignSelf: 'center',
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -145,9 +149,7 @@ const styles = StyleSheet.create({
   },
   exercise: {
     alignItems: 'center',
-    borderStyle: 'solid',
-    borderBottomWidth: 1,
-    borderColor: '#777777',
+    backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 30,
@@ -156,5 +158,10 @@ const styles = StyleSheet.create({
   item: {
     padding: 0,
     fontSize: 16,
-  }
+  },
+  border: {
+    borderBottomWidth: 0.5,
+    borderColor: '#777777',
+    marginHorizontal: 15,
+  },
 });

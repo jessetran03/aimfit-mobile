@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native'
 import LoginScreen from './LoginScreen';
@@ -10,19 +10,28 @@ const Stack = createStackNavigator();
 export default function InitialScreen(props) {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Main">
+      <Stack.Navigator
+        initialRouteName="Back"
+        screenOptions={{
+          headerTintColor: '#39A9DB',
+          headerTitleStyle: { color: 'black'},
+        }}
+      >
         <Stack.Screen
-          name="Main"
+          name="Back"
           component={MainScreen}
+          options={{ headerShown: false, headerTransparent: true }}
         />
         <Stack.Screen
           name="Login"
           component={LoginScreen}
-          initialParams={{onLogin: props.onLogin}}
+          initialParams={{ onLogin: props.onLogin }}
+          options={{ headerShown: true, headerTransparent: true, title: '' }}
         />
         <Stack.Screen
           name="Register"
           component={RegisterScreen}
+          options={{ headerShown: true, headerTransparent: true, title: '' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
@@ -31,35 +40,51 @@ export default function InitialScreen(props) {
 
 function MainScreen({ navigation }) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Aim to be Fit</Text>
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={() => navigation.navigate('Login')}
-      >
-        <Text style={styles.buttonText}>
-          Log In
+    <ImageBackground 
+      source={require('../dumbbell.jpeg')}
+      style={{width: '100%', height: '100%'}}
+      transition={false}
+    >
+      <View style={styles.container}>
+        <Text style={styles.header}>Aim to be Fit</Text>
+        <Text style={styles.headerTwo}>Begin your journey.</Text>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() => navigation.navigate('Login')}
+        >
+          <Text style={styles.buttonText}>
+            Log In
         </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={() => navigation.navigate('Register')}
-      >
-        <Text style={styles.buttonText}>
-          Sign Up
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.registerButtonContainer}
+          onPress={() => navigation.navigate('Register')}
+        >
+          <Text style={styles.buttonText}>
+            Sign Up
         </Text>
-      </TouchableOpacity>
-    </View>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   )
 }
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    backgroundColor: '#333',
+    backgroundColor: '#141A20',
     borderStyle: 'solid',
-    borderColor: 'black',
+    borderColor: '#2A2A2A',
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: 10,
+    padding: 8,
+    marginTop: 20,
+  },
+  registerButtonContainer: {
+    backgroundColor: '#39A9DB',
+    borderStyle: 'solid',
+    borderColor: '#34A4D7',
+    borderWidth: 2,
+    borderRadius: 10,
     padding: 8,
     marginTop: 20,
   },
@@ -75,13 +100,21 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     alignItems: 'stretch',
     marginTop: 80,
-    marginBottom: 80,
+    marginBottom: 60,
   },
   header: {
-    fontSize: 30,
+    fontSize: 40,
+    color: 'white',
     fontWeight: 'bold',
     alignSelf: 'center',
-    marginBottom: 280,
+    marginBottom: 15,
+  },
+  headerTwo: {
+    fontSize: 16,
+    color: '#AAAAAA',
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    marginBottom: 260,
   },
   text: {
     fontSize: 16,

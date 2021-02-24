@@ -8,7 +8,13 @@ const Stack = createStackNavigator();
 
 export default function ExerciseNavigation() {
   return (
-    <Stack.Navigator initialRouteName="Exercises">
+    <Stack.Navigator
+      initialRouteName="Exercises"
+      screenOptions={{
+        headerTintColor: '#39A9DB',
+        headerTitleStyle: { color: 'black'},
+      }}
+    >
       <Stack.Screen
         name="Exercises"
         component={ExerciseTabScreen}

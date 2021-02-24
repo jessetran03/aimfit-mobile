@@ -173,6 +173,7 @@ export default function WorkoutListScreen({ navigation }) {
                 />
               </View>
             </TouchableHighlight>
+            <View style={styles.border} />
 
             <Modal
               animationType="fade"
@@ -277,9 +278,9 @@ export default function WorkoutListScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    backgroundColor: '#eee',
+    backgroundColor: '#39A9DB',
     borderStyle: 'solid',
-    borderColor: 'black',
+    borderColor: '#34A4D7',
     borderWidth: 1,
     borderRadius: 10,
     alignSelf: 'stretch',
@@ -290,13 +291,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: 18,
     fontWeight: 'bold',
+    color: 'white',
   },
   close: {
     alignSelf: 'flex-end',
   },
   container: {
     flex: 1,
-    backgroundColor: '#ccc',
+    backgroundColor: 'white',
     alignItems: 'stretch',
     justifyContent: 'center',
   },
@@ -307,9 +309,9 @@ const styles = StyleSheet.create({
     marginTop: 22
   },
   modalButtonContainer: {
-    backgroundColor: '#eee',
+    backgroundColor: '#53B3DF',
     borderStyle: 'solid',
-    borderColor: 'black',
+    borderColor: '#50B0DC',
     borderWidth: 1,
     borderRadius: 20,
     alignSelf: 'stretch',
@@ -318,6 +320,7 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     alignSelf: 'center',
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -356,12 +359,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#eee',
-    borderStyle: 'solid',
-    borderBottomWidth: 1,
-    borderColor: '#777777',
+    backgroundColor: 'white',
     paddingVertical: 15,
     paddingHorizontal: 30,
+  },
+  border: {
+    borderBottomWidth: 0.5,
+    borderColor: '#777777',
+    marginHorizontal: 15,
   },
   title: {
     fontSize: 24,

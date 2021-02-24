@@ -9,7 +9,13 @@ const Stack = createStackNavigator();
 
 export default function WorkoutNavigation() {
   return (
-    <Stack.Navigator initialRouteName="Workouts">
+    <Stack.Navigator
+      initialRouteName="Workouts"
+      screenOptions={{
+        headerTintColor: '#39A9DB',
+        headerTitleStyle: { color: 'black'},
+      }}
+    >
       <Stack.Screen
         name="Workouts"
         component={WorkoutListScreen}

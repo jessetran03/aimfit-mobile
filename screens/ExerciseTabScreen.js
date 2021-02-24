@@ -63,6 +63,7 @@ export default function ExerciseScreen({ navigation }) {
           : exercises.filter(exercise => exercise.muscle === muscleFilter)
         }
         renderItem={({ item }) =>
+        <>
           <TouchableHighlight
           onPress={() => navigation.navigate('ExerciseLogScreen', {
             id: item.id,
@@ -74,6 +75,8 @@ export default function ExerciseScreen({ navigation }) {
               <Text style={styles.item}>{item.exercise_name}</Text>
             </View>
           </TouchableHighlight>
+          <View style={styles.border} />
+        </>
         }
         keyExtractor={(item) => item.id.toString()}
       />
@@ -82,13 +85,14 @@ export default function ExerciseScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white'
+  },
   exercise: {
     alignItems: 'center',
+    backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderStyle: 'solid',
-    borderBottomWidth: 1,
-    borderColor: '#777777',
     paddingHorizontal: 30,
     paddingVertical: 18,
   },
@@ -107,9 +111,9 @@ const styles = StyleSheet.create({
     color: '#555'
   },
   buttonContainer: {
-    backgroundColor: '#eee',
+    backgroundColor: '#53B3DF',
     borderStyle: 'solid',
-    borderColor: 'black',
+    borderColor: '#53B3DF',
     borderWidth: 1,
     borderRadius: 10,
     alignSelf: 'stretch',
@@ -119,12 +123,12 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     alignSelf: 'center',
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },
   modalView: {
     backgroundColor: "white",
-    borderRadius: 20,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -143,16 +147,19 @@ const styles = StyleSheet.create({
     marginTop: 103
   },
   modalButtonContainer: {
-    backgroundColor: '#eee',
-    borderStyle: 'solid',
-    borderColor: 'black',
-    borderWidth: 1,
+    backgroundColor: '#53B3DF',
     alignSelf: 'stretch',
     padding: 8,
   },
   modalButtonText: {
     alignSelf: 'center',
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  border: {
+    borderBottomWidth: 0.5,
+    borderColor: '#777777',
+    marginHorizontal: 15,
   },
 });

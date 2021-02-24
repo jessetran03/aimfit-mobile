@@ -9,7 +9,7 @@ export default function AddExerciseScreen({ route, navigation }) {
 
   const [exercises, setExercises] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [muscleFilter, setMuscleFilter] = useState('Chest');
+  const [muscleFilter, setMuscleFilter] = useState('All');
 
   async function handleAddExercise(exerciseId, workoutId) {
     const newWorkoutExercise = {
@@ -57,7 +57,7 @@ export default function AddExerciseScreen({ route, navigation }) {
     setModalVisible(false);
   }
 
-  const muscles = ['Chest', 'Back', 'Triceps', 'Biceps', 'Shoulders', 'Traps', 'Quads', 'Hamstrings', 'Calves']
+  const muscles = ['All', 'Chest', 'Back', 'Triceps', 'Biceps', 'Shoulders', 'Traps', 'Quads', 'Hamstrings', 'Calves']
 
   return (
     <View style={styles.container}>
@@ -88,19 +88,25 @@ export default function AddExerciseScreen({ route, navigation }) {
       </Modal>
 
       <FlatList
-        data={exercises.filter(exercise => exercise.muscle === muscleFilter)}
+        data={muscleFilter === 'All'
+          ? exercises
+          : exercises.filter(exercise => exercise.muscle === muscleFilter)
+        }
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) =>
-          <TouchableHighlight onPress={() => console.log('Feature to be added')} underlayColor="#ccc">
-            <View style={styles.exercise}>
-              <Text style={styles.item}>{item.exercise_name}</Text>
-              <Icon
-                onPress={() => handleAddExercise(item.id, route.params.workoutId)}
-                size={22}
-                color='#555'
-                name="add-circle-outline" />
-            </View>
-          </TouchableHighlight>
+          <>
+            <TouchableHighlight onPress={() => console.log('Feature to be added')} underlayColor="#ccc">
+              <View style={styles.exercise}>
+                <Text style={styles.item}>{item.exercise_name}</Text>
+                <Icon
+                  onPress={() => handleAddExercise(item.id, route.params.workoutId)}
+                  size={22}
+                  color='#555'
+                  name="add-circle-outline" />
+              </View>
+            </TouchableHighlight>
+            <View style={styles.border} />
+          </>
         }
       />
     </View>
@@ -108,13 +114,14 @@ export default function AddExerciseScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+  },
   exercise: {
     alignItems: 'center',
+    backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderStyle: 'solid',
-    borderBottomWidth: 1,
-    borderColor: '#777777',
     paddingHorizontal: 30,
     paddingVertical: 18,
   },
@@ -133,9 +140,9 @@ const styles = StyleSheet.create({
     color: '#555'
   },
   buttonContainer: {
-    backgroundColor: '#eee',
+    backgroundColor: '#53B3DF',
     borderStyle: 'solid',
-    borderColor: 'black',
+    borderColor: '#50B0DC',
     borderWidth: 1,
     borderRadius: 10,
     alignSelf: 'stretch',
@@ -145,6 +152,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     alignSelf: 'center',
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -169,16 +177,19 @@ const styles = StyleSheet.create({
     marginTop: 103
   },
   modalButtonContainer: {
-    backgroundColor: '#eee',
-    borderStyle: 'solid',
-    borderColor: 'black',
-    borderWidth: 1,
+    backgroundColor: '#53B3DF',
     alignSelf: 'stretch',
     padding: 8,
   },
   modalButtonText: {
     alignSelf: 'center',
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  border: {
+    borderBottomWidth: 0.5,
+    borderColor: '#777777',
+    marginHorizontal: 15,
   },
 });

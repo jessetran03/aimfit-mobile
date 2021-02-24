@@ -26,8 +26,8 @@ export default function Navigation(props) {
             }
           })}
           tabBarOptions={{
-            activeTintColor: 'black',
-            inactiveTintColor: 'gray',
+            activeTintColor: '#39A9DB',
+            inactiveTintColor: '#BBBBBB',
           }}
         >
           <BottomTab.Screen

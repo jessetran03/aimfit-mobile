@@ -180,10 +180,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonContainer: {
-    backgroundColor: '#333',
+    backgroundColor: '#53B3DF',
     borderStyle: 'solid',
-    borderColor: 'black',
-    borderWidth: 1,
+    borderColor: '#50B0DC',
+    borderWidth: 2,
     borderRadius: 12,
     padding: 8,
     margin: 15,

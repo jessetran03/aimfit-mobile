@@ -24,15 +24,15 @@ export default function LogoutScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'stretch',
   },
   buttonContainer: {
-    backgroundColor: '#333',
+    backgroundColor: '#39A9DB',
     borderStyle: 'solid',
-    borderColor: 'black',
+    borderColor: '#39A9DB',
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: 10,
     padding: 8,
     margin: 15,
   },
