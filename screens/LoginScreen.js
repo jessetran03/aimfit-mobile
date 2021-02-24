@@ -32,11 +32,11 @@ export default function LoginScreen({ route }) {
       })
       .then(res => {
         TokenService.setToken(res.authToken)
-        setLoading(!loading)
+        setLoading(false)
         route.params.onLogin(true);
       })
       .catch(res => {
-        setLoading(!loading)
+        setLoading(false)
         console.error(res.error)
       })
   }

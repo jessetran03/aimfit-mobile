@@ -4,9 +4,9 @@
     "slug": "aimfit-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/aimfit-logo.png",
+    "icon": "./assets/aimfit-icon.png",
     "splash": {
-      "image": "./dumbbell.jpeg",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

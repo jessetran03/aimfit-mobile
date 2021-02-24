@@ -148,26 +148,30 @@ export default function ExerciseLog({ route }) {
           </Text>
         </TouchableOpacity>
       </View>
+      <View style={styles.border} />
       {exerciseLog.length === 0 &&
         <Text style={styles.empty}>No entries have been added yet.</Text>
       }
       <FlatList
         data={exerciseLog}
         renderItem={({ item }) =>
-          <View style={styles.exerciseLog} >
-            <View>
-              <Text>{moment(item.date_logged).format('MM-DD-YYYY')}</Text>
-              <Text>{moment(item.date_logged).format('dddd')}</Text>
+          <>
+            <View style={styles.exerciseLog}>
+              <View>
+                <Text>{moment(item.date_logged).format('MM-DD-YYYY')}</Text>
+                <Text>{moment(item.date_logged).format('dddd')}</Text>
+              </View>
+              <View style={styles.set}>
+                <Text style={styles.weightCount}>{item.weight_count} lb</Text>
+                <Text style={styles.setCount}>{item.set_count}x{item.rep_count}</Text>
+              </View>
+              <Icon
+                onPress={() => onPress(item.id)}
+                size={20}
+                name="ellipsis-vertical" />
             </View>
-            <View style={styles.set}>
-              <Text style={styles.weightCount}>{item.weight_count} lb</Text>
-              <Text style={styles.setCount}>{item.set_count}x{item.rep_count}</Text>
-            </View>
-            <Icon
-              onPress={() => onPress(item.id)}
-              size={20}
-              name="ellipsis-vertical" />
-          </View>
+            <View style={styles.border} />
+          </>
         }
         keyExtractor={(item) => item.id.toString()}
       />
@@ -176,6 +180,9 @@ export default function ExerciseLog({ route }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+  },
   addEntry: {
     alignItems: 'center',
   },
@@ -198,13 +205,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: 16,
     marginTop: 12,
-    fontStyle: 'italic'
+    fontStyle: 'italic',
+    paddingBottom: 12,
   },
   exerciseLog: {
     alignItems: 'center',
-    borderStyle: 'solid',
-    borderBottomWidth: 1,
-    borderColor: '#777777',
+    backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
@@ -229,5 +235,10 @@ const styles = StyleSheet.create({
   weightCount: {
     fontSize: 24,
     fontWeight: 'bold',
-  }
+  },
+  border: {
+    borderBottomWidth: 0.5,
+    borderColor: '#777777',
+    marginHorizontal: 15,
+  },
 });

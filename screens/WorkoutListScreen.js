@@ -149,6 +149,9 @@ export default function WorkoutListScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {workouts.length === 0 &&
+        <Text style={styles.empty}>Create a new workout to begin!</Text>
+      }
       <FlatList
         data={workouts}
         renderItem={({ item }) =>
@@ -243,6 +246,7 @@ export default function WorkoutListScreen({ navigation }) {
               onChangeText={text => setWorkoutName(text)}
               autoCapitalize='none'
               autoCorrect={false}
+              autoFocus={true}
               placeholder="Workout Name"
             />
             <Text style={styles.modalText}>Workout Day</Text>
@@ -307,6 +311,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 22
+  },
+  empty: {
+    alignSelf: 'center',
+    fontSize: 16,
+    marginTop: 20,
+    marginBottom: 12,
+    fontStyle: 'italic'
   },
   modalButtonContainer: {
     backgroundColor: '#53B3DF',
