@@ -17,17 +17,13 @@ Server Repo: [https://github.com/jessetran03/aimfit-api](https://github.com/jess
 
  ## Screenshots
   --------------
- Login Screen:
- ![Login](images/login-screen.png)
+  Login Screen:                      |  Workout List Screen:
+  :---------------------------------:|:---------------------------------:
+  ![Login](images/login-screen.png)  |  ![WorkoutList](images/workout-list-screen.png)
 
- Workout List Screen:
- ![WorkoutList](images/workout-list-screen.png)
-
- Add Exercise Screen:
- ![AddExercises](add-exercise-screen.png)
-
- Exercise Log Screen:
- ![ExerciseLog](images/exercise-log-screen.png)
+  Add Exercise Screen:               |  Exercise Log Screen:
+  :---------------------------------:|:---------------------------------:
+  ![AddExercises](images/add-exercise.png)  |  ![ExerciseLog](images/exercise-log-screen.png)
 
  ## Technologies Used
  --------------
