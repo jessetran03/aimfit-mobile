@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
 import TokenService from '../services/token-service';
-import config from '../config';
 import Spinner from 'react-native-loading-spinner-overlay';
-import Navigation from '../navigation';
+import ApiService from '../services/api-service';
 
-export default function RegisterScreen({ props, navigation }) {
+export default function RegisterScreen({ navigation }) {
 
   const [fullName, onChangeFullName] = useState('Placeholder for username')
   const [username, onChangeUsername] = useState('Placeholder for username')
   const [password, onChangePassword] = useState('Placeholder for password')
+  const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false);
   const [fullNameFocused, setFullNameFocused] = useState(false)
   const [usernameFocused, setUsernameFocused] = useState(false)
@@ -24,23 +24,7 @@ export default function RegisterScreen({ props, navigation }) {
 
   function handleRegister(fullName, username, password) {
     startLoading();
-    const newUser = {
-      full_name: fullName,
-      user_name: username,
-      password: password,
-    }
-    fetch(`${config.API_ENDPOINT}/users`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(newUser),
-    })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
-        return res.json()
-      })
+    ApiService.registerRootComponent(fullName, username, password)
       .then(res => {
         TokenService.setToken(res.authToken)
         setLoading(!loading)
@@ -48,7 +32,7 @@ export default function RegisterScreen({ props, navigation }) {
       })
       .catch(res => {
         setLoading(!loading)
-        console.error(res.error)
+        setError(res.error)
       })
   }
 
@@ -60,6 +44,7 @@ export default function RegisterScreen({ props, navigation }) {
       <View style={styles.container}>
         <View style={styles.loginContainer}></View>
         <Text style={styles.header}>Sign Up</Text>
+        {error && <Text style={styles.error}>{error}</Text>}
         <Text style={styles.text}>Full Name</Text>
         <TextInput
           style={fullNameFocused ? styles.focusedInput : styles.input}
@@ -125,6 +110,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     alignItems: 'stretch',
     marginTop: 100,
+  },
+  error: {
+    color: '#DD0000',
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
   header: {
     color: 'white',

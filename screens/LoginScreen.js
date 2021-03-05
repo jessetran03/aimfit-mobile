@@ -1,35 +1,22 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
 import TokenService from '../services/token-service';
-import config from '../config';
+import ApiService from '../services/api-service';
+import { Button } from '../components/Utils/Utils'
 import Spinner from 'react-native-loading-spinner-overlay';
 
 export default function LoginScreen({ route }) {
 
   const [username, onChangeUsername] = useState('Placeholder for username')
   const [password, onChangePassword] = useState('Placeholder for password')
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const [usernameFocused, setUsernameFocused] = useState(false)
   const [passwordFocused, setPasswordFocused] = useState(false)
 
   function handleLogin(username, password) {
     setLoading(true);
-    const login = {
-      user_name: username,
-      password: password,
-    }
-    fetch(`${config.API_ENDPOINT}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(login),
-    })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
-        return res.json()
-      })
+    ApiService.login(username, password)
       .then(res => {
         TokenService.setToken(res.authToken)
         setLoading(false)
@@ -37,7 +24,7 @@ export default function LoginScreen({ route }) {
       })
       .catch(res => {
         setLoading(false)
-        console.error(res.error)
+        setError(res.error)
       })
   }
 
@@ -49,6 +36,7 @@ export default function LoginScreen({ route }) {
       <View style={styles.container}>
         <View style={styles.loginContainer}></View>
         <Text style={styles.header}>Log In</Text>
+        {error && <Text style={styles.error}>{error}</Text>}
         <Text style={styles.text}>Username</Text>
         <TextInput
           style={usernameFocused ? styles.focusedInput : styles.input}
@@ -75,8 +63,9 @@ export default function LoginScreen({ route }) {
         <TouchableOpacity style={styles.buttonContainer} onPress={() => handleLogin(username, password)}>
           <Text style={styles.buttonText}>
             Log In
-        </Text>
+          </Text>
         </TouchableOpacity>
+        <Button text='Log in' onPress={() => handleLogin(username, password)} />
         <Spinner visible={loading} />
       </View>
     </ImageBackground>
@@ -104,6 +93,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     alignItems: 'stretch',
     marginTop: 100,
+  },
+  error: {
+    color: '#DD0000',
+    fontWeight: 'bold'
   },
   header: {
     color: 'white',

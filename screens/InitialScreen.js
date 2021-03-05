@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native'
+import { Button } from '../components/Utils/Utils'
 import LoginScreen from './LoginScreen';
 import RegisterScreen from './RegisterScreen'
 
@@ -48,56 +49,24 @@ function MainScreen({ navigation }) {
       <View style={styles.container}>
         <Text style={styles.header}>Aim to be Fit</Text>
         <Text style={styles.headerTwo}>Begin your journey.</Text>
-        <TouchableOpacity
-          style={styles.buttonContainer}
+        <Button 
+          color='dark' 
+          text='Log in' 
           onPress={() => navigation.navigate('Login')}
-        >
-          <Text style={styles.buttonText}>
-            Log In
-        </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.registerButtonContainer}
+        />
+        <Button 
+          text='Sign Up'
           onPress={() => navigation.navigate('Register')}
-        >
-          <Text style={styles.buttonText}>
-            Sign Up
-        </Text>
-        </TouchableOpacity>
+        />
       </View>
     </ImageBackground>
   )
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    backgroundColor: '#141A20',
-    borderStyle: 'solid',
-    borderColor: '#2A2A2A',
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 8,
-    marginTop: 20,
-  },
-  registerButtonContainer: {
-    backgroundColor: '#39A9DB',
-    borderStyle: 'solid',
-    borderColor: '#34A4D7',
-    borderWidth: 2,
-    borderRadius: 10,
-    padding: 8,
-    marginTop: 20,
-  },
-  buttonText: {
-    alignSelf: 'center',
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
   container: {
     flex: 1,
     justifyContent: 'flex-end',
-    marginHorizontal: 20,
     alignItems: 'stretch',
     marginTop: 80,
     marginBottom: 60,

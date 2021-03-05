@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Button, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Button } from '../components/Utils/Utils'
 import TokenService from '../services/token-service';
 
 export default function LogoutScreen(props) {
@@ -12,11 +13,7 @@ export default function LogoutScreen(props) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => handleLogout()}>
-        <Text style={styles.buttonText}>
-          Log Out
-        </Text>
-      </TouchableOpacity>
+      <Button text='Log Out' onPress={() => handleLogout()} />
     </View>
   );
 }
@@ -26,20 +23,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'stretch',
-  },
-  buttonContainer: {
-    backgroundColor: '#39A9DB',
-    borderStyle: 'solid',
-    borderColor: '#39A9DB',
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 8,
-    margin: 15,
-  },
-  buttonText: {
-    alignSelf: 'center',
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
   },
 });

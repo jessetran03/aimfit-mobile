@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableHighlight, TouchableOpacity, Modal } from 'react-native';
-import config from '../config'
+import ApiService from '../services/api-service'
+import { Divider } from '../components/Utils/Utils'
 
 export default function ExerciseScreen({ navigation }) {
 
@@ -9,18 +10,9 @@ export default function ExerciseScreen({ navigation }) {
   const [muscleFilter, setMuscleFilter] = useState('All');
 
   useEffect(() => {
-    fetch(`${config.API_ENDPOINT}/exercises`)
-      .then(res =>
-        (!res.ok)
-          ? res.json().then(e => Promise.reject(e))
-          : res.json()
-      )
-      .then((exercises) => {
-        setExercises(exercises)
-      })
-      .catch(error => {
-        console.error({ error })
-      })
+    ApiService.getExercises()
+      .then((exercises) => setExercises(exercises))
+      .catch(error => console.error({ error }))
   }, []);
 
   function handleFilter(muscle) {
@@ -63,20 +55,20 @@ export default function ExerciseScreen({ navigation }) {
           : exercises.filter(exercise => exercise.muscle === muscleFilter)
         }
         renderItem={({ item }) =>
-        <>
-          <TouchableHighlight
-          onPress={() => navigation.navigate('ExerciseLogScreen', {
-            id: item.id,
-            name: item.exercise_name,
-          })}
-            underlayColor="#ccc"
-          >
-            <View style={styles.exercise}>
-              <Text style={styles.item}>{item.exercise_name}</Text>
-            </View>
-          </TouchableHighlight>
-          <View style={styles.border} />
-        </>
+          <>
+            <TouchableHighlight
+              onPress={() => navigation.navigate('ExerciseLogScreen', {
+                id: item.id,
+                name: item.exercise_name,
+              })}
+              underlayColor="#ccc"
+            >
+              <View style={styles.exercise}>
+                <Text style={styles.item}>{item.exercise_name}</Text>
+              </View>
+            </TouchableHighlight>
+            <Divider />
+          </>
         }
         keyExtractor={(item) => item.id.toString()}
       />
@@ -111,7 +103,7 @@ const styles = StyleSheet.create({
     color: '#555'
   },
   buttonContainer: {
-    backgroundColor: '#53B3DF',
+    backgroundColor: '#39A9DB',
     borderStyle: 'solid',
     borderColor: '#53B3DF',
     borderWidth: 1,

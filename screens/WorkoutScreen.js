@@ -1,21 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { ActionSheetIOS, StyleSheet, Text, View, FlatList, Button, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { ActionSheetIOS, StyleSheet, Text, View, FlatList, TouchableHighlight } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import TokenService from '../services/token-service';
-import Spinner from 'react-native-loading-spinner-overlay';
-import config from '../config'
+import ApiService from '../services/api-service';
+import { Divider, Button } from '../components/Utils/Utils'
 
 export default function Workout({ navigation, route }) {
 
   const [exercises, setExercises] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const startLoading = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-  };
 
   function onPress(id) {
     ActionSheetIOS.showActionSheetWithOptions(
@@ -31,50 +22,21 @@ export default function Workout({ navigation, route }) {
     )
   }
 
-  async function getWorkoutExercises() {
-    fetch(`${config.API_ENDPOINT}/workouts/${route.params.id}/exercises`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${await TokenService.getToken()}`
-      }
-    })
-      .then(res =>
-        (!res.ok)
-          ? res.json().then(e => Promise.reject(e))
-          : res.json()
-      )
-      .then((exercises) => {
-        setExercises(exercises)
-      })
-      .catch(error => {
-        console.error({ error })
-      })
+  function getWorkoutExercises(id) {
+    ApiService.getWorkoutExercises(id)
+      .then((exercises) => setExercises(exercises))
+      .catch(error => console.error({ error }))
   }
 
-  async function removeExercise(id) {
-    fetch(`${config.API_ENDPOINT}/workout_exercises/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'content-type': 'application/json',
-        'Authorization': `Bearer ${await TokenService.getToken()}`
-      },
-    })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
-        return
-      })
-      .then(() => {
-        getWorkoutExercises()
-      })
-      .catch(error => {
-        console.error({ error })
-      })
+  function removeExercise(id) {
+    ApiService.deleteWorkoutExercise(id)
+      .then(() => getWorkoutExercises(route.params.id))
+      .catch(error => console.error({ error }))
   }
 
   useEffect(() => {
     navigation.addListener('focus', payload =>
-      getWorkoutExercises()
+      getWorkoutExercises(route.params.id)
     )
   }, []);
 
@@ -104,42 +66,23 @@ export default function Workout({ navigation, route }) {
                   name="ellipsis-vertical" />
               </View>
             </TouchableHighlight>
-            <View style={styles.border} />
+            <Divider />
           </>
         }
         keyExtractor={(item) => item.id.toString()}
       />
-      <TouchableOpacity
-        style={styles.buttonContainer}
+      <Button 
+        text='+ Add Exercise'
         onPress={() => navigation.navigate('AddExerciseScreen', {
           workoutId: route.params.id,
           workoutName: route.params.title
-        })}>
-        <Text style={styles.buttonText}>
-          + Add Exercise
-        </Text>
-      </TouchableOpacity>
+        })}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    backgroundColor: '#39A9DB',
-    borderStyle: 'solid',
-    borderColor: '#39A9DB',
-    borderWidth: 1,
-    borderRadius: 10,
-    alignSelf: 'stretch',
-    padding: 8,
-    margin: 12,
-  },
-  buttonText: {
-    alignSelf: 'center',
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
   empty: {
     alignSelf: 'center',
     fontSize: 16,
@@ -158,10 +101,5 @@ const styles = StyleSheet.create({
   item: {
     padding: 0,
     fontSize: 16,
-  },
-  border: {
-    borderBottomWidth: 0.5,
-    borderColor: '#777777',
-    marginHorizontal: 15,
   },
 });

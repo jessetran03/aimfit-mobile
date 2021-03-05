@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { ActionSheetIOS, StyleSheet, Text, TextInput, View, FlatList, TouchableHighlight, TouchableOpacity, Modal } from 'react-native';
-import TokenService from '../services/token-service';
-import config from '../config'
+import ApiService from '../services/api-service';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
+import { Divider, Button } from '../components/Utils/Utils'
 import WorkoutModal from '../components/WorkoutModal';
 
 export default function WorkoutListScreen({ navigation }) {
@@ -38,103 +38,38 @@ export default function WorkoutListScreen({ navigation }) {
     setEditModalVisible(true)
   }
 
-  async function getWorkouts() {
-    fetch(`${config.API_ENDPOINT}/workouts`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${await TokenService.getToken()}`
-      }
-    })
-      .then(res =>
-        (!res.ok)
-          ? res.json().then(e => Promise.reject(e))
-          : res.json()
-      )
-      .then((workouts) => {
-        setWorkouts(workouts)
-      })
-      .catch(error => {
-        console.error({ error })
-      })
+  const getWorkouts = () => {
+    ApiService.getWorkouts()
+      .then(workouts => {setWorkouts(workouts)})
+      .catch(error => console.error({ error }))
   }
 
-  async function handleAddWorkout(name, day) {
-    const newWorkout = {
-      title: name,
-      day: day,
-    }
-    fetch(`${config.API_ENDPOINT}/workouts`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'Authorization': `Bearer ${await TokenService.getToken()}`
-      },
-      body: JSON.stringify(newWorkout),
-    })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
-        return res.json()
-      })
+  const handleAddWorkout = (name, day) => {
+    ApiService.addWorkout(name, day)
       .then(workout => {
         setModalVisible(!modalVisible)
         setWorkoutName('New Workout')
         setWorkoutDay('Sunday')
-        getWorkouts();
+        getWorkouts()
       })
-      .catch(error => {
-        console.error({ error })
-      })
+      .catch(error => console.error({ error }))
   };
 
-  async function handleEditWorkout(id, title, day) {
-    const workoutToBeUpdated = {
-      title: title,
-      day: day,
-    }
-    fetch(`${config.API_ENDPOINT}/workouts/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'content-type': 'application/json',
-        'Authorization': `Bearer ${await TokenService.getToken()}`
-      },
-      body: JSON.stringify(workoutToBeUpdated),
-    })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
-        return
-      })
+  const handleEditWorkout = (id, title, day) => {
+    ApiService.editWorkout(id, title, day)
       .then(() => {
         setEditModalVisible(false)
         setWorkoutName('New Workout')
         setWorkoutDay('Sunday')
         getWorkouts()
       })
-      .catch(error => {
-        console.error({ error })
-      })
+      .catch(error => console.error({ error }))
   }
 
-  async function deleteWorkout(id) {
-    fetch(`${config.API_ENDPOINT}/workouts/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'content-type': 'application/json',
-        'Authorization': `Bearer ${await TokenService.getToken()}`
-      },
-    })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
-        return
-      })
-      .then(() => {
-        getWorkouts()
-      })
-      .catch(error => {
-        console.error({ error })
-      })
+  const deleteWorkout = (id) => {
+    ApiService.deleteWorkout(id)
+      .then(() => getWorkouts())
+      .catch(error => console.error({ error }))
   }
 
   function closeEditModal() {
@@ -156,27 +91,12 @@ export default function WorkoutListScreen({ navigation }) {
         data={workouts}
         renderItem={({ item }) =>
           <>
-            <TouchableHighlight
-              onPress={() => navigation.navigate('WorkoutScreen', {
-                id: item.id,
-                title: item.title,
-              })}
-              underlayColor="#777"
-            >
-              <View style={styles.workout}>
-                <View>
-                  <Text style={styles.title}>{item.title}</Text>
-                  <Text style={styles.day}>{item.day}</Text>
-                </View>
-                <Icon
-                  onPress={() => onPress(item.id, item.title, item.day)}
-                  style={styles.icon}
-                  size={20}
-                  name="ellipsis-vertical"
-                />
-              </View>
-            </TouchableHighlight>
-            <View style={styles.border} />
+            <Workout
+              navigation={navigation}
+              item={item}
+              onPress={() => onPress(item.id, item.title, item.day)}
+            />
+            <Divider />
 
             <Modal
               animationType="fade"
@@ -200,19 +120,10 @@ export default function WorkoutListScreen({ navigation }) {
                     defaultValue={workoutName}
                   />
                   <Text style={styles.modalText}>Workout Day</Text>
-                  <Picker
+                  <DayPicker
                     selectedValue={workoutDay}
-                    style={styles.picker}
-                    itemStyle={styles.pickerItem}
-                    onValueChange={(itemValue, itemIndex) => setWorkoutDay(itemValue)}>
-                    <Picker.Item label="Sunday" value="Sunday" />
-                    <Picker.Item label="Monday" value="Monday" />
-                    <Picker.Item label="Tuesday" value="Tuesday" />
-                    <Picker.Item label="Wednesday" value="Wednesday" />
-                    <Picker.Item label="Thursday" value="Thursday" />
-                    <Picker.Item label="Friday" value="Friday" />
-                    <Picker.Item label="Saturday" value="Saturday" />
-                  </Picker>
+                    onValueChange={(itemValue, itemIndex) => setWorkoutDay(itemValue)}
+                  />
                   <TouchableOpacity style={styles.modalButtonContainer} onPress={() => handleEditWorkout(workoutId, workoutName, workoutDay)}>
                     <Text style={styles.modalButtonText}>
                       Edit Workout
@@ -250,19 +161,10 @@ export default function WorkoutListScreen({ navigation }) {
               placeholder="Workout Name"
             />
             <Text style={styles.modalText}>Workout Day</Text>
-            <Picker
+            <DayPicker
               selectedValue={workoutDay}
-              style={styles.picker}
-              itemStyle={styles.pickerItem}
-              onValueChange={(itemValue, itemIndex) => setWorkoutDay(itemValue)}>
-              <Picker.Item label="Sunday" value="Sunday" />
-              <Picker.Item label="Monday" value="Monday" />
-              <Picker.Item label="Tuesday" value="Tuesday" />
-              <Picker.Item label="Wednesday" value="Wednesday" />
-              <Picker.Item label="Thursday" value="Thursday" />
-              <Picker.Item label="Friday" value="Friday" />
-              <Picker.Item label="Saturday" value="Saturday" />
-            </Picker>
+              onValueChange={(itemValue, itemIndex) => setWorkoutDay(itemValue)}
+            />
             <TouchableOpacity style={styles.modalButtonContainer} onPress={() => handleAddWorkout(workoutName, workoutDay)}>
               <Text style={styles.modalButtonText}>
                 + Create New Workout
@@ -271,32 +173,93 @@ export default function WorkoutListScreen({ navigation }) {
           </View>
         </View>
       </Modal>
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => setModalVisible(true)}>
-        <Text style={styles.buttonText}>
-          + Create New Workout
-        </Text>
-      </TouchableOpacity>
+      <Button text='+ Create New Workout' onPress={() => setModalVisible(true)} />
     </View>
   );
 }
 
+function DayPicker(props) {
+  return (
+    <Picker
+      selectedValue={props.selectedValue}
+      style={styles.picker}
+      itemStyle={styles.pickerItem}
+      onValueChange={(itemValue, itemIndex) => props.onValueChange(itemValue)}>
+      <Picker.Item label="Sunday" value="Sunday" />
+      <Picker.Item label="Monday" value="Monday" />
+      <Picker.Item label="Tuesday" value="Tuesday" />
+      <Picker.Item label="Wednesday" value="Wednesday" />
+      <Picker.Item label="Thursday" value="Thursday" />
+      <Picker.Item label="Friday" value="Friday" />
+      <Picker.Item label="Saturday" value="Saturday" />
+    </Picker>
+  )
+}
+
+function Workout(props) {
+  const { item, onPress, navigation } = props
+  const { id, title, day } = item
+  return (
+    <TouchableHighlight
+      onPress={() => navigation.navigate('WorkoutScreen', { id, title })}
+      underlayColor="#777777"
+    >
+      <View style={styles.workout}>
+        <View>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.day}>{day}</Text>
+        </View>
+        <Icon
+          onPress={() => onPress(id, title, day)}
+          style={styles.icon}
+          size={20}
+          name="ellipsis-vertical"
+        />
+      </View>
+    </TouchableHighlight>
+  )
+}
+
+
+function AddModal(props) {
+  <Modal
+        animationType="slide"
+        visible={props.visible}
+        transparent={true}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Icon
+              onPress={() => props.setModalVisible(!modalVisible)}
+              style={styles.close}
+              size={24}
+              name="close"
+            />
+            <Text style={styles.modalText}>Name of Workout</Text>
+            <TextInput
+              style={styles.modalInput}
+              onChangeText={text => props.setWorkoutName(text)}
+              autoCapitalize='none'
+              autoCorrect={false}
+              autoFocus={true}
+              placeholder="Workout Name"
+            />
+            <Text style={styles.modalText}>Workout Day</Text>
+            <DayPicker
+              selectedValue={workoutDay}
+              onValueChange={(itemValue, itemIndex) => props.setWorkoutDay(itemValue)}
+            />
+            <TouchableOpacity style={styles.modalButtonContainer} onPress={() => props.handleAddWorkout(workoutName, workoutDay)}>
+              <Text style={styles.modalButtonText}>
+                + Create New Workout
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+}
+
 const styles = StyleSheet.create({
-  buttonContainer: {
-    backgroundColor: '#39A9DB',
-    borderStyle: 'solid',
-    borderColor: '#34A4D7',
-    borderWidth: 1,
-    borderRadius: 10,
-    alignSelf: 'stretch',
-    padding: 8,
-    margin: 12,
-  },
-  buttonText: {
-    alignSelf: 'center',
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
-  },
   close: {
     alignSelf: 'flex-end',
   },
@@ -373,11 +336,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     paddingVertical: 15,
     paddingHorizontal: 30,
-  },
-  border: {
-    borderBottomWidth: 0.5,
-    borderColor: '#777777',
-    marginHorizontal: 15,
   },
   title: {
     fontSize: 24,

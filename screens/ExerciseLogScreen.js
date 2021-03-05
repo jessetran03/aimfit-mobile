@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ActionSheetIOS, StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity } from 'react-native';
-import TokenService from '../services/token-service';
+import ApiService from '../services/api-service';
 import Icon from 'react-native-vector-icons/Ionicons';
-import config from '../config'
+import { Divider } from '../components/Utils/Utils';
 import moment from 'moment';
 
 export default function ExerciseLog({ route }) {
@@ -21,96 +21,30 @@ export default function ExerciseLog({ route }) {
       alert('Please Enter Rep Count');
       return 0;
     }
+    if (!weight) {
+      alert('Please Enter Weight');
+      return 0;
+    }
     return 1;
   }
 
-  async function getExerciseLog() {
-    fetch(`${config.API_ENDPOINT}/exercise_log/${route.params.id}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${await TokenService.getToken()}`
-      }
-    })
-      .then(res =>
-        (!res.ok)
-          ? res.json().then(e => Promise.reject(e))
-          : res.json()
-      )
-      .then((exerciseLog) => {
-        setExerciseLog(exerciseLog)
-      })
-      .catch(error => {
-        console.error({ error })
-      })
+  function getExerciseLog(id) {
+    ApiService.getExerciseLog(id)
+      .then((exerciseLog) => setExerciseLog(exerciseLog))
+      .catch(error => console.error({ error }))
   }
 
-  async function handleAddEntry(set, rep, weight) {
+  function handleAddEntry(id, set, rep, weight) {
     if (!checkInput()) {
       return;
     }
-    const newEntry = {
-      set_count: set,
-      rep_count: rep,
-      weight_count: weight,
-    }
-    fetch(`${config.API_ENDPOINT}/exercise_log/${route.params.id}`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'authorization': `bearer ${await TokenService.getToken()}`
-      },
-      body: JSON.stringify(newEntry),
-    })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
-        return res.json()
-      })
-      .then(entry => {
-        getExerciseLog()
-      })
-      .catch(error => {
-        console.error({ error })
-      })
+    ApiService.addLogEntry(id, set, rep, weight)
+      .then(entry => getExerciseLog(route.params.id))
+      .catch(error => console.error({ error }))
   };
 
-  async function deleteEntry(id) {
-    fetch(`${config.API_ENDPOINT}/exercise_log/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'content-type': 'application/json',
-        'authorization': `Bearer ${await TokenService.getToken()}`
-      },
-    })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
-        return res
-      })
-      .then(() => {
-        getExerciseLog()
-      })
-      .catch(error => {
-        console.error({ error })
-      })
-  }
-
-  function onPress(id) {
-    ActionSheetIOS.showActionSheetWithOptions(
-      {
-        options: ["Cancel", "Delete"],
-        cancelButtonIndex: 0,
-      },
-      buttonIndex => {
-        if (buttonIndex === 1) {
-          deleteEntry(id)
-        }
-      }
-    )
-  }
-
   useEffect(() => {
-    getExerciseLog()
+    getExerciseLog(route.params.id)
   }, []);
 
   return (
@@ -142,41 +76,70 @@ export default function ExerciseLog({ route }) {
           keyboardType="number-pad"
           maxLength={4}
         />
-        <TouchableOpacity style={styles.buttonContainer} onPress={() => handleAddEntry(set, rep, weight)}>
+        <TouchableOpacity style={styles.buttonContainer} onPress={() => handleAddEntry(route.params.id, set, rep, weight)}>
           <Text style={styles.buttonText}>
             + Add Entry
           </Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.border} />
+      <Divider />
       {exerciseLog.length === 0 &&
         <Text style={styles.empty}>No entries have been added yet.</Text>
       }
       <FlatList
         data={exerciseLog}
         renderItem={({ item }) =>
-          <>
-            <View style={styles.exerciseLog}>
-              <View>
-                <Text>{moment(item.date_logged).format('MM-DD-YYYY')}</Text>
-                <Text>{moment(item.date_logged).format('dddd')}</Text>
-              </View>
-              <View style={styles.set}>
-                <Text style={styles.weightCount}>{item.weight_count} lb</Text>
-                <Text style={styles.setCount}>{item.set_count}x{item.rep_count}</Text>
-              </View>
-              <Icon
-                onPress={() => onPress(item.id)}
-                size={20}
-                name="ellipsis-vertical" />
-            </View>
-            <View style={styles.border} />
-          </>
+          <LogEntry item={item} getData={() => getExerciseLog(route.params.id)} />
         }
         keyExtractor={(item) => item.id.toString()}
       />
     </View>
   );
+}
+
+function LogEntry(props) {
+  const { getData, item } = props
+  const { id, date_logged, weight_count, set_count, rep_count } = item
+
+  function deleteEntry(id) {
+    ApiService.deleteLogEntry(id)
+      .then(() => getData())
+      .catch(error => console.error({ error }))
+  }
+
+  function onPress(id) {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Delete"],
+        cancelButtonIndex: 0,
+      },
+      buttonIndex => {
+        if (buttonIndex === 1) {
+          deleteEntry(id)
+        }
+      }
+    )
+  }
+
+  return (
+    <>
+      <View style={styles.exerciseLog}>
+        <View>
+          <Text>{moment(date_logged).format('MM-DD-YYYY')}</Text>
+          <Text>{moment(date_logged).format('dddd')}</Text>
+        </View>
+        <View style={styles.set}>
+          <Text style={styles.weightCount}>{weight_count} lb</Text>
+          <Text style={styles.setCount}>{set_count}x{rep_count}</Text>
+        </View>
+        <Icon
+          onPress={() => onPress(id)}
+          size={20}
+          name="ellipsis-vertical" />
+      </View>
+      <Divider />
+    </>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -235,10 +198,5 @@ const styles = StyleSheet.create({
   weightCount: {
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  border: {
-    borderBottomWidth: 0.5,
-    borderColor: '#777777',
-    marginHorizontal: 15,
   },
 });

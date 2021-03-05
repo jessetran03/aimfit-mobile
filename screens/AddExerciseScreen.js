@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Button, TouchableHighlight, Modal, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import TokenService from '../services/token-service';
-import { Picker } from '@react-native-picker/picker';
-import config from '../config'
+import ApiService from '../services/api-service';
+import { Divider } from '../components/Utils/Utils'
 
 export default function AddExerciseScreen({ route, navigation }) {
 
@@ -11,45 +10,16 @@ export default function AddExerciseScreen({ route, navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [muscleFilter, setMuscleFilter] = useState('All');
 
-  async function handleAddExercise(exerciseId, workoutId) {
-    const newWorkoutExercise = {
-      workout_id: workoutId,
-      exercise_id: exerciseId,
-    }
-    fetch(`${config.API_ENDPOINT}/workout_exercises`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'authorization': `Bearer ${await TokenService.getToken()}`
-      },
-      body: JSON.stringify(newWorkoutExercise),
-    })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
-        return res.json()
-      })
-      .then(workoutExercise => {
-        navigation.goBack()
-      })
-      .catch(error => {
-        console.error({ error })
-      })
+  function handleAddExercise(exerciseId, workoutId) {
+    ApiService.addExercise(exerciseId, workoutId)
+      .then(workoutExercise => navigation.goBack())
+      .catch(error => console.error({ error }))
   }
 
   useEffect(() => {
-    fetch(`${config.API_ENDPOINT}/exercises`)
-      .then(res =>
-        (!res.ok)
-          ? res.json().then(e => Promise.reject(e))
-          : res.json()
-      )
-      .then((exercises) => {
-        setExercises(exercises)
-      })
-      .catch(error => {
-        console.error({ error })
-      })
+    ApiService.getExercises()
+      .then((exercises) => setExercises(exercises))
+      .catch(error => console.error({ error }))
   }, []);
 
   function handleFilter(muscle) {
@@ -105,7 +75,7 @@ export default function AddExerciseScreen({ route, navigation }) {
                   name="add-circle-outline" />
               </View>
             </TouchableHighlight>
-            <View style={styles.border} />
+            <Divider />
           </>
         }
       />
@@ -140,7 +110,7 @@ const styles = StyleSheet.create({
     color: '#555'
   },
   buttonContainer: {
-    backgroundColor: '#53B3DF',
+    backgroundColor: '#39A9DB',
     borderStyle: 'solid',
     borderColor: '#50B0DC',
     borderWidth: 1,
@@ -186,10 +156,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  border: {
-    borderBottomWidth: 0.5,
-    borderColor: '#777777',
-    marginHorizontal: 15,
   },
 });
